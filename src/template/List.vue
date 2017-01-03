@@ -62,16 +62,38 @@ export default {
     this.fetchData()
   },
   methods: {
+    validateNA: function () {
+      this.year = this.year - 1
+      this.page = 1
+      this.$localStorage.set('apiURL', this.$localStorage.get('apiURL') + '&year=' + this.year)
+      var apiURL = this.$localStorage.get('apiURL') + '&page=' + this.page
+      return apiURL
+    },
+    fetchURL: function (apiURL) {
+      var jsonurl = /^https:\/\/6ijwt2j6v5.execute-api\.us-east-1\.amazonaws\.com\/dev\/getdata\/(\w+)/
+      return jsonurl.exec(apiURL)
+    },
     fetchData: function () {
       this.show = true
       let self = this
       var apiURL = this.$localStorage.get('apiURL')
       this.$http.get(apiURL).then(function (response) {
-        // console.log(response.body.titles)
-        this.$set('items', response.body.titles)
-        this.lastdate = response.body.titles[0]['date']
-        self.show = false
-        // console.log(this.lastdate)
+        if (response.body.titles.length === 0) {
+          if (this.fetchURL(apiURL)[1] === 'na' && (this.year >= 2012)) {
+            this.validateNA()
+            this.fetchData()
+          // } else if (this.fetchURL(apiURL)[1] === 'digest') {
+          } else {
+            self.show = false
+            return
+          }
+        } else {
+          this.$set('items', response.body.titles)
+          this.lastdate = response.body.titles[0]['date']
+          self.show = false
+          // console.log(response.body.titles)
+          // console.log(this.lastdate)
+        }
       })
     },
     onRefresh: function (done) {
@@ -80,9 +102,8 @@ export default {
     },
     onInfinite: function (done) {
       var apiURL = this.$localStorage.get('apiURL')
-      var jsonurl = /^https:\/\/6ijwt2j6v5.execute-api\.us-east-1\.amazonaws\.com\/dev\/getdata\/(\w+)/
       // console.log(apiURL)
-      if (jsonurl.exec(apiURL)[0] === 'digest' || jsonurl.exec(apiURL)[1] === 'digest') {
+      if (this.fetchURL(apiURL)[0] === 'digest' || this.fetchURL(apiURL)[1] === 'digest') {
         var splitDate = this.lastdate.split('/')
         var year = splitDate[2]
         var month = splitDate[1]
@@ -93,7 +114,7 @@ export default {
         var dateFormat = require('dateformat')
         apiURL = apiURL + '?date=' + dateFormat(oneWeekAgo, 'yyyymmdd')
         this.lastdate = dateFormat(oneWeekAgo, 'dd/mm/yyyy')
-      } else if (jsonurl.exec(apiURL)[1] === 'na') {
+      } else if (this.fetchURL(apiURL)[1] === 'na') {
         this.page = this.page + 1
         apiURL = apiURL + '&page=' + this.page
       }
@@ -105,12 +126,10 @@ export default {
       this.$http.get(apiURL).then(function (response) {
         // console.log(response.body.titles)
         if (response.body.titles.length === 0) {
-          if (jsonurl.exec(apiURL)[1] === 'na') {
-            this.year = this.year - 1
-            this.page = 1
-            this.$localStorage.set('apiURL', this.$localStorage.get('apiURL') + '&year=' + this.year)
-            apiURL = this.$localStorage.get('apiURL') + '&page=' + this.page
-          } else if (jsonurl.exec(apiURL)[1] === 'digest') {
+          if (this.fetchURL(apiURL)[1] === 'na' && (this.year >= 2012)) {
+            apiURL = this.validateNA()
+          } else {
+          // } else if (this.fetchURL(apiURL)[1] === 'digest') {
             self.show = false
             done()
             return
