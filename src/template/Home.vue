@@ -6,7 +6,7 @@
     <header class='demos-header'>
       <h3 class="demos-title">University 本部</h3>
       <div class="grids">
-        <a v-link="{ name: 'digest' }" v-on:click="itemOnClick('https://6ijwt2j6v5.execute-api.us-east-1.amazonaws.com/dev/getdata/digest', $event)" class="grid">
+        <a v-link="{ name: 'digest' }" v-on:click="itemOnClick('https://6ijwt2j6v5.execute-api.us-east-1.amazonaws.com/dev/getdata/digest', $event, 'Mass Mail Digest')" class="grid">
           <div class="grid_icon">
             <img src="../assets/images/home/menu.png" alt="">
           </div>
@@ -17,7 +17,7 @@
       </div>
       <h3 class="demos-title">Collage 書院</h3>
       <div class="grids">
-        <a v-link="{ name: 'na'}" v-on:click="itemOnClick('https://6ijwt2j6v5.execute-api.us-east-1.amazonaws.com/dev/getdata/na?lang=en', $event)" class="grid">
+        <a v-link="{ name: 'na'}" v-on:click="itemOnClick('https://6ijwt2j6v5.execute-api.us-east-1.amazonaws.com/dev/getdata/na?lang=en', $event, 'New Asia Collage')" class="grid">
           <div class="grid_icon">
             <img src="../assets/images/home/menu.png" alt="">
           </div>
@@ -25,7 +25,7 @@
             New Asia Collage
           </p>
         </a>
-        <a v-link="{ name: 'na'}" v-on:click="itemOnClick('https://6ijwt2j6v5.execute-api.us-east-1.amazonaws.com/dev/getdata/na?lang=zh', $event)" class="grid">
+        <a v-link="{ name: 'na'}" v-on:click="itemOnClick('https://6ijwt2j6v5.execute-api.us-east-1.amazonaws.com/dev/getdata/na?lang=zh', $event, '新亞書院')" class="grid">
           <div class="grid_icon">
             <img src="../assets/images/home/menu.png" alt="">
           </div>
@@ -57,9 +57,11 @@ export default {
     Grid
   },
   methods: {
-    itemOnClick: function (url, e) {
+    itemOnClick: function (url, e, title) {
       this.$localStorage.remove('apiURL')
       this.$localStorage.set('apiURL', url)
+      this.$localStorage.remove('headerTitle')
+      this.$localStorage.set('headerTitle', title)
     }
   }
 }
