@@ -59,7 +59,6 @@ export default {
     validateNA: function () {
       this.year = this.year - 1
       this.page = 1
-      // this.$localStorage.set('apiURL', this.$localStorage.get('apiURL') + '&year=' + this.year)
       var apiURL = this.$localStorage.get('apiURL') + '&page=' + this.page
       return apiURL + '&year=' + this.year
     },
@@ -94,9 +93,10 @@ export default {
       } else if (this.fetchURL(apiURL)[1] === 'na') {
         if (this.page === 0) {
           this.page = 1
+          apiURL = apiURL + '&year=' + this.year
         } else {
           this.page = this.page + 1
-          apiURL = apiURL + '&page=' + this.page
+          apiURL = apiURL + '&page=' + this.page + '&year=' + this.year
         }
       }
       // console.log(apiURL)
@@ -107,8 +107,6 @@ export default {
           if (this.fetchURL(apiURL)[1] === 'na' && (this.year >= 2012)) {
             apiURL = this.validateNA()
           } else {
-            // self.show = false
-            // done()
             this.$broadcast('$InfiniteLoading:complete')
             return
           }
@@ -132,6 +130,9 @@ export default {
       })
     },
     itemOnClick: function (url, e) {
+      this.lastdate = null
+      this.page = 0
+      this.year = (new Date()).getFullYear()
       this.$localStorage.set('url', url)
     }
   }
