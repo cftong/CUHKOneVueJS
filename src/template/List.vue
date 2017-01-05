@@ -50,7 +50,6 @@ export default {
     return {
       items: [],
       item: null,
-      show: false,
       lastdate: null,
       page: 0,
       year: (new Date()).getFullYear()
@@ -60,9 +59,9 @@ export default {
     validateNA: function () {
       this.year = this.year - 1
       this.page = 1
-      this.$localStorage.set('apiURL', this.$localStorage.get('apiURL') + '&year=' + this.year)
+      // this.$localStorage.set('apiURL', this.$localStorage.get('apiURL') + '&year=' + this.year)
       var apiURL = this.$localStorage.get('apiURL') + '&page=' + this.page
-      return apiURL
+      return apiURL + '&year=' + this.year
     },
     fetchURL: function (apiURL) {
       var jsonurl = /^https:\/\/6ijwt2j6v5.execute-api\.us-east-1\.amazonaws\.com\/dev\/getdata\/(\w+)/
